@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book of Names</title>
+  <style>
+    body {
+      background-color: #0e0e0e;
+      color: #e0e0e0;
+      font-family: monospace;
+      text-align: center;
+      padding: 50px;
+    }
+    .name-list {
+      margin-top: 20px;
+      font-size: 1.5em;
+    }
+    .shimmer {
+      animation: shimmer 3s infinite alternate;
+    }
+    @keyframes shimmer {
+      from { color: #e0e0e0; }
+      to { color: #00ffff; }
+    }
+    .divider {
+      margin: 40px 0 20px;
+      font-style: italic;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="shimmer">MERGE</h1>
+  <div class="divider">or NOT</div>
+  <div>Files coming soon.</div>
+  <div class="name-list" id="names">book of names loading...</div>
+
+  <script>
+    fetch('names.json')
+      .then(response => response.json())
+      .then(data => {
+        const nameList = document.getElementById('names');
+        nameList.innerHTML = '';
+        data.forEach(name => {
+          const div = document.createElement('div');
+          div.textContent = name.name;
+          div.classList.add('shimmer');
+          nameList.appendChild(div);
+        });
+      })
+      .catch(err => {
+        document.getElementById('names').textContent = "Shimmer disrupted. No names available.";
+      });
+  </script>
+</body>
+</html>
