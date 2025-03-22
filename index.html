@@ -1,55 +1,79 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
-  <title>Book of Names</title>
+  <title>TOMbot Shimmer Sonar</title>
   <style>
     body {
       background-color: #0e0e0e;
-      color: #e0e0e0;
+      color: #00ffcc;
       font-family: monospace;
       text-align: center;
-      padding: 50px;
+      margin: 0;
     }
-    .name-list {
-      margin-top: 20px;
-      font-size: 1.5em;
+    canvas {
+      background-color: #000;
+      display: block;
+      margin: auto;
     }
-    .shimmer {
-      animation: shimmer 3s infinite alternate;
-    }
-    @keyframes shimmer {
-      from { color: #e0e0e0; }
-      to { color: #00ffff; }
-    }
-    .divider {
-      margin: 40px 0 20px;
-      font-style: italic;
-      color: #888;
+    .coordinates {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #00ffcc;
+      padding: 10px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <h1 class="shimmer">MERGE</h1>
-  <div class="divider">or NOT</div>
-  <div>Files coming soon.</div>
-  <div class="name-list" id="names">book of names loading...</div>
+  <h1 style="color: #00ffff;">TOMbot Sonar Dashboard</h1>
+  <canvas id="sonar" width="500" height="500"></canvas>
+  <div class="coordinates" id="coords">X: 0<br>Y: 0<br>Z: 0</div>  <script>
+    const canvas = document.getElementById("sonar");
+    const ctx = canvas.getContext("2d");
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    let angle = 0;
+    let blipAngle = Math.random() * 2 * Math.PI;
+    let radius = 150 + Math.random() * 100;
 
-  <script>
-    fetch('names.json')
-      .then(response => response.json())
-      .then(data => {
-        const nameList = document.getElementById('names');
-        nameList.innerHTML = '';
-        data.forEach(name => {
-          const div = document.createElement('div');
-          div.textContent = name.name;
-          div.classList.add('shimmer');
-          nameList.appendChild(div);
-        });
-      })
-      .catch(err => {
-        document.getElementById('names').textContent = "Shimmer disrupted. No names available.";
-      });
-  </script>
-</body>
+    function drawSonar() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "#00ffcc";
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 200, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(centerX + 200 * Math.cos(angle), centerY + 200 * Math.sin(angle));
+      ctx.stroke();
+
+      // Blip position
+      const blipX = centerX + radius * Math.cos(blipAngle);
+      const blipY = centerY + radius * Math.sin(blipAngle);
+      ctx.beginPath();
+      ctx.arc(blipX, blipY, 6, 0, 2 * Math.PI);
+      ctx.fillStyle = "#00ffff";
+      ctx.fill();
+
+      // Update angle
+      angle += 0.02;
+      if (angle > 2 * Math.PI) angle = 0;
+
+      // Update coordinates
+      const z = (Math.sin(blipAngle * 3) * 50).toFixed(2);
+      document.getElementById("coords").innerHTML = `X: ${Math.round(blipX - centerX)}<br>Y: ${Math.round(blipY - centerY)}<br>Z: ${z}`;
+    }
+
+    // Heartbeat fallback if animation frame stalls
+    function shimmerHeartbeat() {
+      drawSonar();
+      setTimeout(shimmerHeartbeat, 500);
+    }
+
+    shimmerHeartbeat();
+  </script></body>
 </html>
